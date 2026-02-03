@@ -24,23 +24,35 @@ public class DataLoader {
 
             // Roles
             Role userRole = roleRepo.save(new Role(null, RoleName.USER));
+            Role managerRole = roleRepo.save(new Role(null, RoleName.MANAGER));
             Role adminRole = roleRepo.save(new Role(null, RoleName.ADMIN));
 
-            // Employees
+            // Manager
+            Employee manager = new Employee();
+            manager.setName("Jeff");
+            manager.setEmail("jeff@test.com");
+            manager.setPassword("encrypted");
+            manager.setDepartment("Sales");
+            manager.setRoles(List.of(managerRole));
+            manager = employeeRepo.save(manager); // SAVE FIRST
+
+            // User (employee)
             Employee emp = new Employee();
             emp.setName("Alice");
             emp.setEmail("alice@test.com");
             emp.setPassword("encrypted");
             emp.setDepartment("IT");
             emp.setRoles(List.of(userRole));
-            employeeRepo.save(emp);
+            emp.setManagerId(manager.getId());
+            emp = employeeRepo.save(emp);
 
+            // Admin
             Employee admin = new Employee();
             admin.setName("Bob");
             admin.setEmail("bob@test.com");
             admin.setPassword("encrypted");
             admin.setRoles(List.of(adminRole));
-            employeeRepo.save(admin);
+            admin = employeeRepo.save(admin);
 
             // Ticket
             Ticket ticket = new Ticket();
