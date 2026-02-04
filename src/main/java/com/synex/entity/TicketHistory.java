@@ -2,6 +2,7 @@ package com.synex.entity;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.synex.enums.TicketAction;
 
 import jakarta.persistence.*;
@@ -15,6 +16,7 @@ public class TicketHistory {
     private Long id;
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "ticket_id")
     private Ticket ticket;
 
