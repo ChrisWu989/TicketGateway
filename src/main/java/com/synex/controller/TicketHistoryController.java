@@ -8,7 +8,7 @@ import com.synex.entity.TicketHistory;
 import com.synex.service.TicketHistoryService;
 
 @RestController
-@RequestMapping("/tickets")
+@RequestMapping("/api/tickets")
 public class TicketHistoryController {
 
     private final TicketHistoryService historyService;
@@ -18,7 +18,7 @@ public class TicketHistoryController {
     }
 
     @GetMapping("/{ticketId}/history")
-    public List<TicketHistory> viewHistory(@PathVariable Long ticketId) {
-        return historyService.getHistoryForTicket(ticketId);
+    public List<TicketHistory> getTicketHistory(@PathVariable Long ticketId) {
+        return historyService.getHistoryByTicketId(ticketId);
     }
 }
