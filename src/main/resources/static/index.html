@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Ticket System</title>
+</head>
+<body>
+    <h2>Select Role (Week 1 Demo)</h2>
+
+    <button onclick="goUser()">User Dashboard</button>
+    <button onclick="goManager()">Manager Dashboard</button>
+    <button onclick="goAdmin()">Admin Dashboard</button>
+
+    <script>
+        function goUser() {
+            window.location.href = "/dashboard-user.html";
+        }
+        function goManager() {
+            window.location.href = "/dashboard-manager.html";
+        }
+        function goAdmin() {
+            window.location.href = "/dashboard-admin.html";
+        }
+    </script>
+</body>
+</html>
