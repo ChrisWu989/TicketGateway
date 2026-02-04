@@ -17,12 +17,21 @@ public class RoleService {
         this.roleRepository = roleRepository;
     }
 
-    public List<Role> getAllRoles() {
-        return roleRepository.findAll();
+    public Role getRoleByName(RoleName roleName) {
+        return roleRepository.findByName(roleName)
+                .orElseThrow(() ->
+                        new RuntimeException("Role not found: " + roleName)
+                );
     }
 
-    public Role getRoleByName(RoleName name) {
-        return roleRepository.findByName(name)
-                .orElseThrow(() -> new RuntimeException("Role not found"));
+    public Role getRoleById(Long id) {
+        return roleRepository.findById(id)
+                .orElseThrow(() ->
+                        new RuntimeException("Role not found with id: " + id)
+                );
+    }
+
+    public List<Role> getAllRoles() {
+        return roleRepository.findAll();
     }
 }
