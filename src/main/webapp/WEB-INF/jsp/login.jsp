@@ -1,5 +1,6 @@
+<%@ page contentType="text/html;charset=UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<htmml>
+<html>
 <body>
 <h2>Login</h2>
 

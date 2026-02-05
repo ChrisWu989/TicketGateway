@@ -29,26 +29,26 @@ public class SecurityConfig {
 
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/login", "/css/**", "/js/**", "/h2-console/**").permitAll()
-                .requestMatchers("/dashboard").authenticated()
-                .requestMatchers("/dashboard/user/**").hasRole("USER")
-                .requestMatchers("/dashboard/manager/**").hasRole("MANAGER")
-                .requestMatchers("/dashboard/admin/**").hasRole("ADMIN")
+                .requestMatchers("/login","/login**", "/h2-console/**", "/ping", "/test").permitAll()
+//                .requestMatchers("/dashboard/user/**").hasRole("USER")
+//                .requestMatchers("/dashboard/manager/**").hasRole("MANAGER")
+//                .requestMatchers("/dashboard/admin/**").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .formLogin(form -> form
                 .loginPage("/login")
-                .defaultSuccessUrl("/dashboard", true)
+//                .defaultSuccessUrl("/dashboard", true)
                 .permitAll()
             )
             .logout(logout -> logout
                 .logoutSuccessUrl("/login?logout")
-                .invalidateHttpSession(true)
-                .deleteCookies("JSESSIOINID")
-                .permitAll()
+//                .invalidateHttpSession(true)
+//                .deleteCookies("JSESSIOINID")
+//                .permitAll()
             );
         
         http.csrf(csrf -> csrf.disable());
+        http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
         
         return http.build();
     }

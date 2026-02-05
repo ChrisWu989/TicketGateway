@@ -20,7 +20,7 @@ public class DataLoader {
             EmployeeRepository employeeRepo,
             RoleRepository roleRepo,
             TicketRepository ticketRepo,
-            PasswordEncoder encoder
+           PasswordEncoder encoder
     ) {
         return args -> {
 
@@ -33,7 +33,8 @@ public class DataLoader {
             Employee manager = new Employee();
             manager.setName("Jeff");
             manager.setEmail("jeff@test.com");
-            manager.setPassword(encoder.encode("password123"));
+            manager.setPassword( encoder.encode("password123"));
+//            manager.setPassword("password123");
             manager.setDepartment("Sales");
             manager.setRoles(List.of(managerRole));
             manager = employeeRepo.save(manager); // SAVE FIRST
@@ -43,6 +44,7 @@ public class DataLoader {
             emp.setName("Alice");
             emp.setEmail("alice@test.com");
             emp.setPassword(encoder.encode("password123"));
+//            emp.setPassword("password123");
             emp.setDepartment("IT");
             emp.setRoles(List.of(userRole));
             emp.setManagerId(manager.getId());
@@ -53,6 +55,7 @@ public class DataLoader {
             admin.setName("Bob");
             admin.setEmail("bob@test.com");
             admin.setPassword(encoder.encode("password123"));
+//            admin.setPassword("password123");
             admin.setRoles(List.of(adminRole));
             admin = employeeRepo.save(admin);
 

@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import com.synex.entity.Employee;
 
-@SuppressWarnings("serial")
+
 public class CustomUserDetails implements UserDetails {
 
 	private final Employee employee;
