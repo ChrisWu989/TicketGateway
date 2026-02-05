@@ -4,7 +4,7 @@
 <body>
 <h2>Login</h2>
 
-<form method="post" action="/login">
+<form action="/login" method="post">
     Email: <input type="text" name="username" /><br/>
     Password: <input type="password" name="password" /><br/>
     <button type="submit">Login</button>

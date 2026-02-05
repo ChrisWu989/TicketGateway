@@ -1,7 +1,6 @@
 package com.synex.controller;
 
 
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,8 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
 public class AuthorizationController {
-
-	@PreAuthorize("permitAll()")
+	
     @GetMapping("/login")
     public String login() {
     	System.out.println("LOGIN CONTROLLER HIT");
@@ -23,11 +21,7 @@ public class AuthorizationController {
     public String ping() {
         return "PING OK";
     }
-
-    @GetMapping("/test")
-    public String test() {
-        return "test";
-    }
+    
 
     @GetMapping("/dashboard")
     public String dashboard(Authentication auth) {
