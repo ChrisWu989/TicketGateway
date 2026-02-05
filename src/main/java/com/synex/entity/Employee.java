@@ -24,7 +24,7 @@ public class Employee {
 
     private Long managerId;
     
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "employee_roles",
         joinColumns = @JoinColumn(name = "employee_id"),

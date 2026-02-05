@@ -3,6 +3,7 @@ package com.synex.config;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.synex.entity.*;
 import com.synex.enums.*;
@@ -18,7 +19,8 @@ public class DataLoader {
     CommandLineRunner loadData(
             EmployeeRepository employeeRepo,
             RoleRepository roleRepo,
-            TicketRepository ticketRepo
+            TicketRepository ticketRepo,
+            PasswordEncoder encoder
     ) {
         return args -> {
 
@@ -31,7 +33,7 @@ public class DataLoader {
             Employee manager = new Employee();
             manager.setName("Jeff");
             manager.setEmail("jeff@test.com");
-            manager.setPassword("encrypted");
+            manager.setPassword(encoder.encode("password123"));
             manager.setDepartment("Sales");
             manager.setRoles(List.of(managerRole));
             manager = employeeRepo.save(manager); // SAVE FIRST
@@ -40,7 +42,7 @@ public class DataLoader {
             Employee emp = new Employee();
             emp.setName("Alice");
             emp.setEmail("alice@test.com");
-            emp.setPassword("encrypted");
+            emp.setPassword(encoder.encode("password123"));
             emp.setDepartment("IT");
             emp.setRoles(List.of(userRole));
             emp.setManagerId(manager.getId());
@@ -50,7 +52,7 @@ public class DataLoader {
             Employee admin = new Employee();
             admin.setName("Bob");
             admin.setEmail("bob@test.com");
-            admin.setPassword("encrypted");
+            admin.setPassword(encoder.encode("password123"));
             admin.setRoles(List.of(adminRole));
             admin = employeeRepo.save(admin);
 
