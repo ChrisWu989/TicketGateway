@@ -32,7 +32,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
             	.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-                .requestMatchers("/login", "/login**", "/h2-console/**", "/ping").permitAll()
+                .requestMatchers("/login", "/login**", "/h2-console/**").permitAll()
                 .requestMatchers("/dashboard/user/**").hasAuthority("USER")
                 .requestMatchers("/dashboard/manager/**").hasAuthority("MANAGER")
                 .requestMatchers("/dashboard/admin/**").hasAuthority("ADMIN")
