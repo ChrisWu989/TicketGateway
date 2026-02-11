@@ -33,6 +33,26 @@ public class SecurityConfig {
             .authorizeHttpRequests(auth -> auth
             	.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                 .requestMatchers("/login", "/login**", "/h2-console/**").permitAll()
+                // Ticket endpoints - accessible by authenticated users
+                .requestMatchers("/tickets/create").hasAnyAuthority("USER", "MANAGER", "ADMIN")
+                .requestMatchers("/tickets/my_tickets").hasAnyAuthority("USER", "MANAGER", "ADMIN")
+                .requestMatchers("/tickets/view/**").authenticated()
+                .requestMatchers("/tickets/*/close", "/tickets/*/reopen").hasAnyAuthority("USER", "MANAGER", "ADMIN")
+                
+                // Manager-specific endpoints
+                .requestMatchers("/tickets/pending_approval").hasAnyAuthority("MANAGER", "ADMIN")
+                .requestMatchers("/tickets/*/approve", "/tickets/*/reject").hasAnyAuthority("MANAGER", "ADMIN")
+                .requestMatchers("/tickets/approved", "/tickets/*/assign").hasAnyAuthority("MANAGER", "ADMIN")
+                
+                // Admin-specific endpoints
+                .requestMatchers("/tickets/assigned").hasAuthority("ADMIN")
+                .requestMatchers("/tickets/*/resolve").hasAuthority("ADMIN")
+                
+                // API endpoints
+                .requestMatchers("/api/tickets/**").authenticated()
+                
+                // Dashboards
+                .requestMatchers("/dashboard").authenticated()
                 .requestMatchers("/dashboard/user/**").hasAuthority("USER")
                 .requestMatchers("/dashboard/manager/**").hasAuthority("MANAGER")
                 .requestMatchers("/dashboard/admin/**").hasAuthority("ADMIN")

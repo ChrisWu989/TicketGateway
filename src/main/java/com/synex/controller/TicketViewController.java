@@ -58,23 +58,23 @@ public class TicketViewController {
     }
 
     // View user's own tickets
-    @GetMapping("/my-tickets")
+    @GetMapping("/my_tickets")
     public String viewMyTickets(Model model, Authentication auth) {
         Employee employee = getEmployeeFromAuth(auth);
         List<Ticket> tickets = ticketService.getTicketsByCreator(employee);
         model.addAttribute("tickets", tickets);
-        return "tickets/my-tickets";
+        return "tickets/my_tickets";
     }
 
-    // Manager view: pending approval
-    @GetMapping("/pending-approval")
+    // Manager pending approval
+    @GetMapping("/pending_approval")
     public String viewPendingApproval(Model model) {
         List<Ticket> tickets = ticketService.getTicketsByStatus(TicketStatus.OPEN);
         model.addAttribute("tickets", tickets);
-        return "tickets/pending-approval";
+        return "tickets/pending_approval";
     }
 
-    // Admin view: assigned tickets
+    // Admin assigned tickets
     @GetMapping("/assigned")
     public String viewAssignedTickets(Model model, Authentication auth) {
         Employee admin = getEmployeeFromAuth(auth);
@@ -94,7 +94,7 @@ public class TicketViewController {
     }
 
     // View ticket details
-    @GetMapping("/{id}")
+    @GetMapping("/view/{id}")
     public String viewTicketDetails(@PathVariable Long id, Model model) {
         Ticket ticket = ticketService.getTicketById(id);
         List<TicketHistory> history = historyService.getHistoryByTicketId(id);
@@ -116,7 +116,7 @@ public class TicketViewController {
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", "Error: " + e.getMessage());
         }
-        return "redirect:/tickets/pending-approval";
+        return "redirect:/tickets/pending_approval";
     }
 
     // Reject ticket
@@ -132,7 +132,7 @@ public class TicketViewController {
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", "Error: " + e.getMessage());
         }
-        return "redirect:/tickets/pending-approval";
+        return "redirect:/tickets/pending_approval";
     }
 
     // Assign ticket
@@ -183,7 +183,7 @@ public class TicketViewController {
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", "Error: " + e.getMessage());
         }
-        return "redirect:/tickets/my-tickets";
+        return "redirect:/tickets/my_tickets";
     }
 
     // Reopen ticket
@@ -199,7 +199,7 @@ public class TicketViewController {
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", "Error: " + e.getMessage());
         }
-        return "redirect:/tickets/my-tickets";
+        return "redirect:/tickets/my_tickets";
     }
 
     private Employee getEmployeeFromAuth(Authentication auth) {
