@@ -57,17 +57,17 @@ public class DataLoader {
             admin = employeeRepo.save(admin);
 
             // Ticket
-            Ticket ticket = new Ticket();
-            ticket.setTitle("VPN not working");
-            ticket.setDescription("Cannot connect to VPN");
-            ticket.setCreatedBy(emp);
-            ticket.setAssignee(admin);
-            ticket.setPriority(TicketPriority.HIGH);
-            ticket.setStatus(TicketStatus.OPEN);
-            ticket.setCreationDate(new Date());
-            ticket.setCategory("Network");
-
-            ticketRepo.save(ticket);
+//            Ticket ticket = new Ticket();
+//            ticket.setTitle("VPN not working");
+//            ticket.setDescription("Cannot connect to VPN");
+//            ticket.setCreatedBy(emp);
+//            ticket.setAssignee(admin);
+//            ticket.setPriority(TicketPriority.HIGH);
+//            ticket.setStatus(TicketStatus.OPEN);
+//            ticket.setCreationDate(new Date());
+//            ticket.setCategory("Network");
+//
+//            ticketRepo.save(ticket);
 
             System.out.println("✅ H2 test data loaded");
         };

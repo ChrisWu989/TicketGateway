@@ -72,27 +72,9 @@
     </div>
     
     <div class="dashboard-card">
-        <h3>Pending Approval</h3>
-        <p>Review and approve/reject new tickets</p>
-        <a href="/tickets/pending_approval" class="btn btn-warning">Review Tickets</a>
-    </div>
-    
-    <div class="dashboard-card">
-        <h3>Approved Tickets</h3>
-        <p>Assign approved tickets to IT staff</p>
-        <a href="/tickets/approved" class="btn btn-success">Assign Tickets</a>
-    </div>
-    
-    <div class="dashboard-card">
         <h3>My Tickets</h3>
         <p>View and manage your own tickets</p>
         <a href="/tickets/my_tickets" class="btn">View My Tickets</a>
-    </div>
-    
-    <div class="dashboard-card">
-        <h3>Create New Ticket</h3>
-        <p>Submit a new support ticket</p>
-        <a href="/tickets/create" class="btn btn-success">Create Ticket</a>
     </div>
     
     <div style="margin-top: 30px;">
@@ -102,5 +84,3 @@
     </div>
 </body>
 </html>
-
-

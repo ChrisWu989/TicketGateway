@@ -38,6 +38,10 @@
             background-color: #28a745;
             color: white;
         }
+        .status-REOPENED {
+            background-color: #fd7e14;
+            color: white;
+        }
         .btn {
             padding: 6px 12px;
             text-decoration: none;
@@ -71,7 +75,7 @@
     </style>
 </head>
 <body>
-    <h1>Approved Tickets - Ready for Assignment</h1>
+    <h1>Ticket Assignment Queue (Approved & Reopened)</h1>
     
     <c:if test="${not empty success}">
         <div class="alert alert-success">${success}</div>
@@ -113,7 +117,7 @@
                             <td>${ticket.description}</td>
                             <td>${ticket.category}</td>
                             <td class="priority-${ticket.priority}">${ticket.priority}</td>
-                            <td><span class="status">${ticket.status}</span></td>
+                            <td><span class="status status-${ticket.status}">${ticket.status}</span></td>
                             <td>${ticket.createdBy.email}</td>
                             <td><fmt:formatDate value="${ticket.creationDate}" pattern="yyyy-MM-dd HH:mm" /></td>
                             <td>

@@ -25,7 +25,7 @@ public class TicketController {
         this.employeeRepository = employeeRepository;
     }
     
-    // Create Ticket
+    // create
     @PostMapping
     public ResponseEntity<Ticket> createTicket(@RequestBody Ticket ticket, Authentication auth) {
         Employee creator = getEmployeeFromAuth(auth);
@@ -33,39 +33,39 @@ public class TicketController {
         return ResponseEntity.ok(created);
     }
     
-    // Get all Tickets
+    // view all
     @GetMapping
     public ResponseEntity<List<Ticket>> getAllTickets() {
         return ResponseEntity.ok(ticketService.getAllTickets());
     }
     
-    // Ticket by ID
+    // view ticket
     @GetMapping("/{id}")
     public ResponseEntity<Ticket> getTicket(@PathVariable Long id) {
         return ResponseEntity.ok(ticketService.getTicketById(id));
     }
     
-    // Retrieve User tickets
+    // view my tickets
     @GetMapping("/my-tickets")
     public ResponseEntity<List<Ticket>> getMyTickets(Authentication auth) {
         Employee employee = getEmployeeFromAuth(auth);
         return ResponseEntity.ok(ticketService.getTicketsByCreator(employee));
     }
     
-    // Retrieve tickets on status
+    // view by status
     @GetMapping("/status/{status}")
     public ResponseEntity<List<Ticket>> getTicketsByStatus(@PathVariable TicketStatus status) {
         return ResponseEntity.ok(ticketService.getTicketsByStatus(status));
     }
     
-    // Get assigned tickets (queue for manager and admin)
+    // assigned admin
     @GetMapping("/assigned-to-me")
     public ResponseEntity<List<Ticket>> getAssignedTickets(Authentication auth) {
         Employee employee = getEmployeeFromAuth(auth);
         return ResponseEntity.ok(ticketService.getTicketsByAssignee(employee));
     }
-    
-    // Manager Approve
+
+    // approve manager
     @PostMapping("/{id}/approve")
     public ResponseEntity<Ticket> approveTicket(
             @PathVariable Long id,
@@ -77,7 +77,7 @@ public class TicketController {
         return ResponseEntity.ok(approved);
     }
 
-    // Manager Reject
+    // reject manager
     @PostMapping("/{id}/reject")
     public ResponseEntity<Ticket> rejectTicket(
             @PathVariable Long id,
@@ -89,7 +89,7 @@ public class TicketController {
         return ResponseEntity.ok(rejected);
     }
     
-    // Assign Ticket to Admin
+    // assign manager
     @PostMapping("/{id}/assign")
     public ResponseEntity<Ticket> assignTicket(
             @PathVariable Long id,
@@ -105,7 +105,7 @@ public class TicketController {
         return ResponseEntity.ok(assigned);
     }
     
-    // Admin resolve ticket
+    // resolve admin
     @PostMapping("/{id}/resolve")
     public ResponseEntity<Ticket> resolveTicket(
             @PathVariable Long id,
@@ -116,8 +116,7 @@ public class TicketController {
         Ticket resolved = ticketService.resolveTicket(id, resolver, resolutionDetails);
         return ResponseEntity.ok(resolved);
     }
-    
-    // close ticket
+
     @PostMapping("/{id}/close")
     public ResponseEntity<Ticket> closeTicket(
             @PathVariable Long id,
@@ -128,8 +127,7 @@ public class TicketController {
         Ticket closed = ticketService.closeTicket(id, closedBy, comments);
         return ResponseEntity.ok(closed);
     }
-    
-    // reopen ticket
+
     @PostMapping("/{id}/reopen")
     public ResponseEntity<Ticket> reopenTicket(
             @PathVariable Long id,
@@ -146,5 +144,4 @@ public class TicketController {
         return employeeRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Employee not found"));
     }
-    
 }

@@ -77,12 +77,6 @@
         <a href="/tickets/my_tickets" class="btn">View My Tickets</a>
     </div>
     
-    <div class="dashboard-card">
-        <h3>Create New Ticket</h3>
-        <p>Submit a new support ticket</p>
-        <a href="/tickets/create" class="btn btn-success">Create Ticket</a>
-    </div>
-    
     <div style="margin-top: 30px;">
         <form action="/logout" method="post" style="display: inline;">
             <button type="submit" class="btn btn-danger">Logout</button>
@@ -90,4 +84,3 @@
     </div>
 </body>
 </html>
-

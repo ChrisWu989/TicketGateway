@@ -33,7 +33,7 @@ public class TicketViewController {
         this.employeeRepository = employeeRepository;
     }
 
-    // Show create ticket form
+    // create ticket form
     @GetMapping("/create")
     public String showCreateForm(Model model) {
         model.addAttribute("ticket", new Ticket());
@@ -48,9 +48,18 @@ public class TicketViewController {
                               RedirectAttributes redirectAttrs) {
         try {
             Employee creator = getEmployeeFromAuth(auth);
+            
+            // Only USERs can create tickets
+            boolean isUser = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("USER"));
+            if (!isUser) {
+                redirectAttrs.addFlashAttribute("error", "Only users can create tickets!");
+                return "redirect:/dashboard";
+            }
+            
             ticketService.createTicket(ticket, creator);
             redirectAttrs.addFlashAttribute("success", "Ticket created successfully!");
-            return "redirect:/tickets/my-tickets";
+            return "redirect:/tickets/my_tickets";
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", "Error creating ticket: " + e.getMessage());
             return "redirect:/tickets/create";
@@ -86,13 +95,27 @@ public class TicketViewController {
     // View all approved tickets (for assignment)
     @GetMapping("/approved")
     public String viewApprovedTickets(Model model) {
-        List<Ticket> tickets = ticketService.getTicketsByStatus(TicketStatus.APPROVED);
-        List<Employee> admins = employeeRepository.findAll(); // Filter by ADMIN role if needed
+        // Get both APPROVED and REOPENED tickets (reopened tickets need reassignment)
+        List<Ticket> approvedTickets = ticketService.getTicketsByStatus(TicketStatus.APPROVED);
+        List<Ticket> reopenedTickets = ticketService.getTicketsByStatus(TicketStatus.REOPENED);
+        
+        // Combine both lists
+        List<Ticket> tickets = new java.util.ArrayList<>();
+        tickets.addAll(approvedTickets);
+        tickets.addAll(reopenedTickets);
+        
+        // Get only employees with ADMIN role
+        List<Employee> allEmployees = employeeRepository.findAll();
+        List<Employee> admins = allEmployees.stream()
+                .filter(emp -> emp.getRoles().stream()
+                        .anyMatch(role -> role.getName().name().equals("ADMIN")))
+                .collect(java.util.stream.Collectors.toList());
+        
         model.addAttribute("tickets", tickets);
         model.addAttribute("admins", admins);
         return "tickets/approved";
     }
-
+    
     // View ticket details
     @GetMapping("/view/{id}")
     public String viewTicketDetails(@PathVariable Long id, Model model) {
@@ -110,6 +133,14 @@ public class TicketViewController {
                                Authentication auth,
                                RedirectAttributes redirectAttrs) {
         try {
+            // Only MANAGERs can approve tickets
+            boolean isManager = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("MANAGER"));
+            if (!isManager) {
+                redirectAttrs.addFlashAttribute("error", "Only managers can approve tickets!");
+                return "redirect:/dashboard";
+            }
+            
             Employee manager = getEmployeeFromAuth(auth);
             ticketService.approveTicket(id, manager, comments);
             redirectAttrs.addFlashAttribute("success", "Ticket approved successfully!");
@@ -118,7 +149,7 @@ public class TicketViewController {
         }
         return "redirect:/tickets/pending_approval";
     }
-
+    
     // Reject ticket
     @PostMapping("/{id}/reject")
     public String rejectTicket(@PathVariable Long id, 
@@ -126,6 +157,14 @@ public class TicketViewController {
                               Authentication auth,
                               RedirectAttributes redirectAttrs) {
         try {
+            // Only MANAGERs can reject tickets
+            boolean isManager = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("MANAGER"));
+            if (!isManager) {
+                redirectAttrs.addFlashAttribute("error", "Only managers can reject tickets!");
+                return "redirect:/dashboard";
+            }
+            
             Employee manager = getEmployeeFromAuth(auth);
             ticketService.rejectTicket(id, manager, reason);
             redirectAttrs.addFlashAttribute("success", "Ticket rejected!");
@@ -143,6 +182,14 @@ public class TicketViewController {
                               Authentication auth,
                               RedirectAttributes redirectAttrs) {
         try {
+            // Only MANAGERs can assign tickets
+            boolean isManager = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("MANAGER"));
+            if (!isManager) {
+                redirectAttrs.addFlashAttribute("error", "Only managers can assign tickets!");
+                return "redirect:/dashboard";
+            }
+            
             Employee assignedBy = getEmployeeFromAuth(auth);
             Employee assignee = employeeRepository.findById(assigneeId)
                     .orElseThrow(() -> new RuntimeException("Assignee not found"));
@@ -161,6 +208,14 @@ public class TicketViewController {
                                Authentication auth,
                                RedirectAttributes redirectAttrs) {
         try {
+            // Only ADMINs can resolve tickets
+            boolean isAdmin = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+            if (!isAdmin) {
+                redirectAttrs.addFlashAttribute("error", "Only admins can resolve tickets!");
+                return "redirect:/dashboard";
+            }
+            
             Employee resolver = getEmployeeFromAuth(auth);
             ticketService.resolveTicket(id, resolver, resolutionDetails);
             redirectAttrs.addFlashAttribute("success", "Ticket resolved successfully!");
@@ -177,6 +232,14 @@ public class TicketViewController {
                              Authentication auth,
                              RedirectAttributes redirectAttrs) {
         try {
+            // Only USERs can close tickets
+            boolean isUser = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("USER"));
+            if (!isUser) {
+                redirectAttrs.addFlashAttribute("error", "Only users can close tickets!");
+                return "redirect:/dashboard";
+            }
+            
             Employee closedBy = getEmployeeFromAuth(auth);
             ticketService.closeTicket(id, closedBy, comments);
             redirectAttrs.addFlashAttribute("success", "Ticket closed!");
@@ -193,6 +256,14 @@ public class TicketViewController {
                               Authentication auth,
                               RedirectAttributes redirectAttrs) {
         try {
+            // Only USERs can reopen tickets
+            boolean isUser = auth.getAuthorities().stream()
+                    .anyMatch(a -> a.getAuthority().equals("USER"));
+            if (!isUser) {
+                redirectAttrs.addFlashAttribute("error", "Only users can reopen tickets!");
+                return "redirect:/dashboard";
+            }
+            
             Employee reopenedBy = getEmployeeFromAuth(auth);
             ticketService.reopenTicket(id, reopenedBy, reason);
             redirectAttrs.addFlashAttribute("success", "Ticket reopened!");

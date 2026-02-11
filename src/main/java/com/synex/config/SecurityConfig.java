@@ -34,14 +34,16 @@ public class SecurityConfig {
             	.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
                 .requestMatchers("/login", "/login**", "/h2-console/**").permitAll()
                 // Ticket endpoints - accessible by authenticated users
-                .requestMatchers("/tickets/create").hasAnyAuthority("USER", "MANAGER", "ADMIN")
                 .requestMatchers("/tickets/my_tickets").hasAnyAuthority("USER", "MANAGER", "ADMIN")
                 .requestMatchers("/tickets/view/**").authenticated()
-                .requestMatchers("/tickets/*/close", "/tickets/*/reopen").hasAnyAuthority("USER", "MANAGER", "ADMIN")
+                
+                // User-specific endpoints
+                .requestMatchers("/tickets/create").hasAnyAuthority("USER")
+                .requestMatchers("/tickets/*/close", "/tickets/*/reopen").hasAnyAuthority("USER")
                 
                 // Manager-specific endpoints
-                .requestMatchers("/tickets/pending_approval").hasAnyAuthority("MANAGER", "ADMIN")
-                .requestMatchers("/tickets/*/approve", "/tickets/*/reject").hasAnyAuthority("MANAGER", "ADMIN")
+                .requestMatchers("/tickets/pending_approval").hasAnyAuthority("MANAGER")
+                .requestMatchers("/tickets/*/approve", "/tickets/*/reject").hasAnyAuthority("MANAGER")
                 .requestMatchers("/tickets/approved", "/tickets/*/assign").hasAnyAuthority("MANAGER", "ADMIN")
                 
                 // Admin-specific endpoints

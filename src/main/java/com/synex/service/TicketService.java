@@ -102,8 +102,9 @@ public class TicketService {
     public Ticket assignTicket(Long ticketId, Employee assignee, Employee assignedBy, String comments) {
         Ticket ticket = getTicketById(ticketId);
         
-        if (ticket.getStatus() != TicketStatus.APPROVED) {
-            throw new RuntimeException("Only APPROVED tickets can be assigned");
+        // Can assign tickets that are APPROVED or REOPENED
+        if (ticket.getStatus() != TicketStatus.APPROVED && ticket.getStatus() != TicketStatus.REOPENED) {
+            throw new RuntimeException("Only APPROVED or REOPENED tickets can be assigned");
         }
         
         ticket.setStatus(TicketStatus.ASSIGNED);
