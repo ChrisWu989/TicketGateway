@@ -124,7 +124,10 @@
         <c:if test="${not empty ticket.fileAttachmentPath}">
             <div class="info-row">
                 <span class="label">Attachment:</span>
-                <a href="/uploads/${ticket.fileAttachmentPath}" download>Download File</a>
+                <a href="/tickets/download/${ticket.fileAttachmentPath}?originalName=${ticket.originalFileName}"
+                   style="color:#007bff;">
+                    📎 ${not empty ticket.originalFileName ? ticket.originalFileName : ticket.fileAttachmentPath}
+                </a>
             </div>
         </c:if>
     </div>

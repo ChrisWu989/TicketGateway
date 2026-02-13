@@ -41,6 +41,8 @@ public class Ticket {
     private String category;
 
     private String fileAttachmentPath;
+    
+    private String originalFileName;
 
     @OneToMany(mappedBy = "ticket", cascade = CascadeType.ALL)
     private List<TicketHistory> history;
@@ -52,7 +54,7 @@ public class Ticket {
 
 	public Ticket(Long id, String title, String description, Employee createdBy, Employee assignee,
 			TicketPriority priority, TicketStatus status, Date creationDate, String category, String fileAttachmentPath,
-			List<TicketHistory> history) {
+			String originalFileName, List<TicketHistory> history) {
 		super();
 		this.id = id;
 		this.title = title;
@@ -64,6 +66,7 @@ public class Ticket {
 		this.creationDate = creationDate;
 		this.category = category;
 		this.fileAttachmentPath = fileAttachmentPath;
+		this.originalFileName = originalFileName;
 		this.history = history;
 	}
 
@@ -146,7 +149,15 @@ public class Ticket {
 	public void setFileAttachmentPath(String fileAttachmentPath) {
 		this.fileAttachmentPath = fileAttachmentPath;
 	}
+	
+	public String getOriginalFileName() {
+	    return originalFileName;
+	}
 
+	public void setOriginalFileName(String originalFileName) {
+	    this.originalFileName = originalFileName;
+	}
+	
 	public List<TicketHistory> getHistory() {
 		return history;
 	}

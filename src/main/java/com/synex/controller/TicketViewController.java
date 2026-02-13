@@ -2,10 +2,16 @@ package com.synex.controller;
 
 import java.util.List;
 
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.synex.entity.Employee;
@@ -14,6 +20,7 @@ import com.synex.entity.TicketHistory;
 import com.synex.enums.TicketPriority;
 import com.synex.enums.TicketStatus;
 import com.synex.repository.EmployeeRepository;
+import com.synex.service.FileStorageService;
 import com.synex.service.TicketHistoryService;
 import com.synex.service.TicketService;
 
@@ -24,13 +31,16 @@ public class TicketViewController {
     private final TicketService ticketService;
     private final TicketHistoryService historyService;
     private final EmployeeRepository employeeRepository;
+    private final FileStorageService fileStorageService;
 
     public TicketViewController(TicketService ticketService, 
                                 TicketHistoryService historyService,
-                                EmployeeRepository employeeRepository) {
+                                EmployeeRepository employeeRepository,
+                                FileStorageService fileStorageService) {
         this.ticketService = ticketService;
         this.historyService = historyService;
         this.employeeRepository = employeeRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     // create ticket form
@@ -43,12 +53,13 @@ public class TicketViewController {
 
     // Submit new ticket
     @PostMapping("/create")
-    public String createTicket(@ModelAttribute Ticket ticket, 
+    public String createTicket(@ModelAttribute Ticket ticket,
+                              @RequestParam(value = "attachment", required = false) MultipartFile attachment,
                               Authentication auth,
                               RedirectAttributes redirectAttrs) {
         try {
             Employee creator = getEmployeeFromAuth(auth);
-            
+
             // Only USERs can create tickets
             boolean isUser = auth.getAuthorities().stream()
                     .anyMatch(a -> a.getAuthority().equals("USER"));
@@ -56,10 +67,18 @@ public class TicketViewController {
                 redirectAttrs.addFlashAttribute("error", "Only users can create tickets!");
                 return "redirect:/dashboard";
             }
-            
+
+            // Handle file upload
+            if (attachment != null && !attachment.isEmpty()) {
+                String filename = fileStorageService.storeFile(attachment);
+                ticket.setFileAttachmentPath(filename);
+                ticket.setOriginalFileName(attachment.getOriginalFilename());
+            }
+
             ticketService.createTicket(ticket, creator);
-            redirectAttrs.addFlashAttribute("success", "Ticket created successfully!");
+            redirectAttrs.addFlashAttribute("success", "Ticket created! A confirmation email has been sent.");
             return "redirect:/tickets/my_tickets";
+            
         } catch (Exception e) {
             redirectAttrs.addFlashAttribute("error", "Error creating ticket: " + e.getMessage());
             return "redirect:/tickets/create";
@@ -271,6 +290,41 @@ public class TicketViewController {
             redirectAttrs.addFlashAttribute("error", "Error: " + e.getMessage());
         }
         return "redirect:/tickets/my_tickets";
+    }
+    
+    // Download file attachment
+    @GetMapping("/download/{filename:.+}")
+    @ResponseBody
+    public ResponseEntity<Resource> downloadFile(@PathVariable String filename,
+                                                  @RequestParam(required = false) String originalName) {
+        try {
+            java.nio.file.Path filePath = fileStorageService.getFilePath(filename);
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (!resource.exists()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Use original filename for the download prompt if available
+            String downloadName = (originalName != null && !originalName.isEmpty())
+                    ? originalName : filename;
+
+            // Detect content type
+            String contentType = "application/octet-stream";
+            try {
+                contentType = java.nio.file.Files.probeContentType(filePath);
+                if (contentType == null) contentType = "application/octet-stream";
+            } catch (Exception ignored) {}
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION,
+                            "attachment; filename=\"" + downloadName + "\"")
+                    .body(resource);
+
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     private Employee getEmployeeFromAuth(Authentication auth) {

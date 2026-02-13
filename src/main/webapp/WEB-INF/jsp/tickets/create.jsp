@@ -67,7 +67,7 @@
         <div class="alert alert-error">${error}</div>
     </c:if>
     
-    <form action="/tickets/create" method="post">
+    <form action="/tickets/create" method="post" enctype="multipart/form-data">
         <div class="form-group">
             <label for="title">Title *</label>
             <input type="text" id="title" name="title" required>
@@ -94,13 +94,14 @@
             </select>
         </div>
         
-        <!-- File upload can be added later -->
-        <!--
         <div class="form-group">
-            <label for="file">Attachment (optional)</label>
-            <input type="file" id="file" name="file">
+            <label for="attachment">Attachment <span style="color: #888; font-weight: normal;">(optional - max 10MB)</span></label>
+            <input type="file" id="attachment" name="attachment"
+                   accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png,.gif,.txt,.zip">
+            <small style="color: #888; display: block; margin-top: 4px;">
+                Supported: PDF, Word, Excel, Images, Text, ZIP
+            </small>
         </div>
-        -->
         
         <button type="submit">Create Ticket</button>
         <a href="/dashboard"><button type="button">Cancel</button></a>

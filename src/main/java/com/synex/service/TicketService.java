@@ -10,6 +10,7 @@ import com.synex.entity.Employee;
 import com.synex.entity.Ticket;
 import com.synex.enums.TicketAction;
 import com.synex.enums.TicketStatus;
+import com.synex.repository.EmployeeRepository;
 import com.synex.repository.TicketRepository;
 
 
@@ -18,10 +19,20 @@ public class TicketService {
 
     private final TicketRepository ticketRepository;
     private final TicketHistoryService historyService;
+    private final EmailService emailService;
+    private final PdfService pdfService;
+    private final EmployeeRepository employeeRepository;
 
-    public TicketService(TicketRepository ticketRepository, TicketHistoryService historyService) {
-        this.ticketRepository = ticketRepository;
-        this.historyService = historyService;
+    public TicketService(TicketRepository ticketRepository,
+                         TicketHistoryService historyService,
+                         EmailService emailService,
+                         PdfService pdfService,
+                         EmployeeRepository employeeRepository) {
+        this.ticketRepository   = ticketRepository;
+        this.historyService     = historyService;
+        this.emailService       = emailService;
+        this.pdfService         = pdfService;
+        this.employeeRepository = employeeRepository;
     }
     
     //USER creates ticket
@@ -34,6 +45,16 @@ public class TicketService {
         
         // Log creation in history
         historyService.logAction(saved, TicketAction.CREATED, creator, "Ticket created");
+        
+        // email to notify ticket creation
+        emailService.sendTicketCreationEmail(saved);
+        
+        // email to manager
+        if (creator.getManagerId() != null) {
+            employeeRepository.findById(creator.getManagerId()).ifPresent(manager ->
+                emailService.sendNewTicketToManagerEmail(saved, manager)
+            );
+        }
         
         return saved;
     }
@@ -94,6 +115,9 @@ public class TicketService {
         historyService.logAction(updated, TicketAction.REJECTED, manager, 
                 reason != null ? reason : "Ticket rejected");
         
+        // rejection email to user
+        emailService.sendTicketRejectedEmail(updated, reason);
+        
         return updated;
     }
     
@@ -115,6 +139,10 @@ public class TicketService {
         historyService.logAction(updated, TicketAction.ASSIGNED, assignedBy, 
                 comments != null ? comments : "Ticket assigned to " + assignee.getEmail());
         
+
+        // assignment email to admin
+        emailService.sendTicketAssignedEmail(updated);
+        
         return updated;
     }
     
@@ -133,6 +161,11 @@ public class TicketService {
         // Log resolution
         historyService.logAction(updated, TicketAction.RESOLVED, resolver, 
                 resolutionDetails != null ? resolutionDetails : "Ticket resolved");
+        
+        // Get full history for PDF to generate pdf and email it on resolution to user
+        List<com.synex.entity.TicketHistory> history = historyService.getHistoryByTicketId(ticketId);
+        byte[] pdfBytes = pdfService.generateResolutionPdf(updated, history, resolutionDetails);
+        emailService.sendTicketResolutionEmail(updated, pdfBytes, resolutionDetails);
         
         return updated;
     }
@@ -172,6 +205,13 @@ public class TicketService {
         // Log reopening
         historyService.logAction(updated, TicketAction.REOPENED, reopenedBy, 
                 reason != null ? reason : "Ticket reopened");
+        
+        // Email manager: ticket reopened, reassignment needed
+        if (updated.getCreatedBy().getManagerId() != null) {
+            employeeRepository.findById(updated.getCreatedBy().getManagerId()).ifPresent(manager ->
+                emailService.sendTicketReopenedToManagerEmail(updated, reason, manager)
+            );
+        }
         
         return updated;
     }

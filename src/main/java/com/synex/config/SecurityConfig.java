@@ -36,6 +36,7 @@ public class SecurityConfig {
                 // Ticket endpoints - accessible by authenticated users
                 .requestMatchers("/tickets/my_tickets").hasAnyAuthority("USER", "MANAGER", "ADMIN")
                 .requestMatchers("/tickets/view/**").authenticated()
+                .requestMatchers("/tickets/download/**").authenticated()
                 
                 // User-specific endpoints
                 .requestMatchers("/tickets/create").hasAnyAuthority("USER")

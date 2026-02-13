@@ -41,7 +41,7 @@ public class DataLoader {
             // User (employee)
             Employee emp = new Employee();
             emp.setName("Alice");
-            emp.setEmail("alice@test.com");
+            emp.setEmail("csgoisdabomb12@gmail.com");
             emp.setPassword(encoder.encode("password123"));
             emp.setDepartment("IT");
             emp.setRoles(List.of(userRole));

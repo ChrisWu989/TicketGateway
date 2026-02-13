@@ -81,7 +81,6 @@
         <div class="alert alert-error">${error}</div>
     </c:if>
     
-    <a href="/tickets/create" class="btn btn-success">Create New Ticket</a>
     <a href="/dashboard" class="btn btn-primary">Back to Dashboard</a>
     
     <table>
