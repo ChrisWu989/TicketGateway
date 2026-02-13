@@ -156,6 +156,7 @@ public class EmailService {
             helper.setSubject("TicketGateway - Ticket #" + ticket.getId() + " Reopened - Reassignment Required: " + ticket.getTitle());
             helper.setText(buildReopenedForManagerHtml(ticket, reason), true);
             
+            attachFileIfPresent(helper, ticket);
             mailSender.send(message);
             System.out.println("Reopened ticket notification sent to manager: " + manager.getEmail());
             
@@ -410,6 +411,9 @@ public class EmailService {
     }
 
     private String buildRejectedEmailHtml(Ticket ticket, String reason) {
+        String attachmentNote = (ticket.getFileAttachmentPath() != null && !ticket.getFileAttachmentPath().isEmpty())
+                ? "      <p style='color: #555; font-size: 13px;'>📎 The user's uploaded file (<strong>" + ticket.getOriginalFileName() + "</strong>) is attached to this email.</p>"
+                : "";
         return "<!DOCTYPE html>" +
                "<html><head><meta charset='UTF-8'></head>" +
                "<body style='font-family: Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 0;'>" +
@@ -446,10 +450,10 @@ public class EmailService {
                "      <p style='color: #555; font-weight: bold; margin-bottom: 5px;'>Reason for Rejection:</p>" +
                "      <div style='color: #666; background-color: #fdf2f2; padding: 15px; border-radius: 4px; border-left: 4px solid #e74c3c; font-size: 14px;'>" +
                (reason != null && !reason.isEmpty() ? reason : "No specific reason provided.") +
-               "      </div>" +
+               "      </div>" + attachmentNote +
 
                "      <p style='color: #888; font-size: 13px; margin-top: 25px;'>If you believe this was rejected in error or need further assistance, please contact your manager directly or submit a new ticket with additional details.</p>" +
-               "    </div>" +
+               "    </div>" + 
 
                // Footer
                "    <div style='background-color: #f4f4f4; padding: 15px; text-align: center;'>" +
@@ -460,6 +464,9 @@ public class EmailService {
     }
     
     private String buildReopenedForManagerHtml(Ticket ticket, String reason) {
+        String attachmentNote = (ticket.getFileAttachmentPath() != null && !ticket.getFileAttachmentPath().isEmpty())
+                ? "      <p style='color: #555; font-size: 13px;'>📎 The user's uploaded file (<strong>" + ticket.getOriginalFileName() + "</strong>) is attached to this email.</p>"
+                : "";
         return "<!DOCTYPE html>" +
                "<html>" +
                "<head><meta charset='UTF-8'></head>" +
@@ -498,7 +505,7 @@ public class EmailService {
                "      <p style='color: #555; font-weight: bold; margin-bottom: 5px;'>Reason for Reopening:</p>" +
                "      <div style='color: #666; background-color: #fff3e0; padding: 15px; border-radius: 4px; border-left: 4px solid #fd7e14; font-size: 14px;'>" +
                (reason != null && !reason.isEmpty() ? reason : "No reason provided.") +
-               "      </div>" +
+               "      </div>" + attachmentNote +
 
                "      <p style='color: #888; font-size: 13px; margin-top: 25px;'>Please log in to TicketGateway to reassign this ticket to an admin.</p>" +
                "    </div>" +

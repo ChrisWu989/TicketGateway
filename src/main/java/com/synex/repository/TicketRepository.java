@@ -18,4 +18,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findByCreatedByOrderByCreationDateDesc(Employee createdBy);
     
     List<Ticket> findByStatusOrderByCreationDateAsc(TicketStatus status);
+    
+    List<Ticket> findByCreatedBy_ManagerIdOrderByCreationDateDesc(Long managerId);
 }

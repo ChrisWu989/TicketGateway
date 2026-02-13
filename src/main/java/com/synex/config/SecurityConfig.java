@@ -32,7 +32,7 @@ public class SecurityConfig {
         http
             .authorizeHttpRequests(auth -> auth
             	.dispatcherTypeMatchers(DispatcherType.FORWARD, DispatcherType.ERROR).permitAll()
-                .requestMatchers("/login", "/login**", "/h2-console/**").permitAll()
+                .requestMatchers("/login", "/login**").permitAll()
                 // Ticket endpoints - accessible by authenticated users
                 .requestMatchers("/tickets/my_tickets").hasAnyAuthority("USER", "MANAGER", "ADMIN")
                 .requestMatchers("/tickets/view/**").authenticated()

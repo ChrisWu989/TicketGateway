@@ -80,6 +80,10 @@ public class TicketService {
         return ticketRepository.findByAssignee(assignee);
     }
     
+    public List<Ticket> getTicketsByManagedEmployees(Long managerId) {
+        return ticketRepository.findByCreatedBy_ManagerIdOrderByCreationDateDesc(managerId);
+    }
+    
     //MANAGER approves ticket
     @Transactional
     public Ticket approveTicket(Long ticketId, Employee manager, String comments) {
@@ -138,7 +142,6 @@ public class TicketService {
         // Log assignment
         historyService.logAction(updated, TicketAction.ASSIGNED, assignedBy, 
                 comments != null ? comments : "Ticket assigned to " + assignee.getEmail());
-        
 
         // assignment email to admin
         emailService.sendTicketAssignedEmail(updated);

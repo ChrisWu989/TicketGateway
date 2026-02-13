@@ -85,12 +85,35 @@ public class TicketViewController {
         }
     }
 
-    // View user's own tickets
+    // View Tickets (role based)
     @GetMapping("/my_tickets")
     public String viewMyTickets(Model model, Authentication auth) {
         Employee employee = getEmployeeFromAuth(auth);
-        List<Ticket> tickets = ticketService.getTicketsByCreator(employee);
+
+        boolean isAdmin = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ADMIN"));
+        boolean isManager = auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("MANAGER"));
+
+        List<Ticket> tickets;
+        String viewTitle;
+
+        if (isAdmin) {
+            // ADMINs see every ticket in the system
+            tickets = ticketService.getAllTickets();
+            viewTitle = "All Tickets";
+        } else if (isManager) {
+            // MANAGERs see tickets from employees they manage
+            tickets = ticketService.getTicketsByManagedEmployees(employee.getId());
+            viewTitle = "My Team's Tickets";
+        } else {
+            // USERs see only their own tickets
+            tickets = ticketService.getTicketsByCreator(employee);
+            viewTitle = "My Tickets";
+        }
+        
         model.addAttribute("tickets", tickets);
+        model.addAttribute("viewTitle", viewTitle);
         return "tickets/my_tickets";
     }
 
